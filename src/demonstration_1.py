@@ -36,7 +36,7 @@ Notes:
 - The value of each color in `image[i][j]` and `newColor` will be an integer in
 `[0, 65535]`.
 """
-def flood_fill(image, sr, sc, new_color):
+def flood_fill(image, sr, sc, new_color, initial_color = None):
     """
     Inputs:
     image -> List[List[int]]
@@ -48,4 +48,64 @@ def flood_fill(image, sr, sc, new_color):
     List[List[int]]
     """
     # Your code here
+    print(initial_color)
+    if new_color == image[sr][sc]:
+        return image
+    if initial_color == None:
+        initial_color = image[sr][sc]
+    if image[sr][sc] == initial_color:
+        image[sr][sc] = new_color
+        for x in range(-1,2):
+            for y in range(-1,2):
+                if sr + x >= 0 and sr + x < len(image) \
+                and sc + y >= 0 and sc + y < len(image[sr]):
+                    flood_fill(image, sr + x, sc + y, new_color, initial_color)
+    return image
 
+def flood_fill_instructor(image, sr, sc, new_color):
+    """
+    Inputs:
+    image -> List[List[int]]
+    sr -> int
+    sc -> int
+    new_color -> int
+
+    Output:
+    List[List[int]]
+    """ 
+    # from the starting position, we need to traverse outward
+    # checking in all 4 cardinal directions 
+    # either dft or bft will work since we don't care about the
+    # order in which pixels are colored 
+    # I'll pick dfs since it's a bit easier to implement 
+    # change the color at this position to be the new color 
+    # we also need to keep track of the original color 
+    original_color = image[sr][sc]
+
+    if original_color == new_color:
+        return image 
+
+    R = len(image)
+    C = len(image[0])
+
+    def dft(row, col):
+        if image[row][col] == original_color:
+            image[row][col] = new_color
+
+            # look up by subtracting 1 from row index 
+            if row >= 1:
+                dft(row - 1, col)
+
+            # look right by incrementing 1 to the col index 
+            if col + 1 <= C:
+                dft(row, col + 1)
+            # look down by adding 1 to the row index
+            if row + 1 <= R:
+                dft(row + 1, col)
+            # look left by subtracting 1 from the col index 
+            if col >= 1:
+                dft(row, col - 1)
+    dft(sr, sc)
+    return image 
+
+print(flood_fill([[0,0],[0,1]], 0, 0, 4))
